@@ -1,0 +1,27 @@
+to get the data we will be using onSnapShot(). there is another method called detData it can also be used to get the data
+the difference is
+    onSnapShot = listen for real time updates, to stop this we can use the empty array at the end 
+    getData = get the data only once
+use the useEffect method will working with data like getting data from the firbase
+
+uploading a data in firestore
+    1.setDoc from firestore.
+
+            const handleChange = async ()=> {
+      const docref = doc(db,"colors","color001");
+      const payload = {color:"black",value:"#001"}
+      await setDoc(docref,payload)
+    }
+
+    2. while working with api we should use async, await
+
+    3.addDoc()
+            const userRef = collection(db,"users",userId);
+        const payload = {
+            name:name,
+            email: email, // Replace with actual user email
+            
+        };
+              await addDoc(userRef,payload);
+
+ npm install react-router-dom

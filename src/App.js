@@ -1,39 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
-import firebase from './firebase';
-import { useEffect } from 'react';
-import { collection, onSnapshot, addDoc } from 'firebase/firestore';
-import { useState } from 'react';
-import {Dot} from './dot'
-import {handleNew, handleEdit} from './util'
+import React, { useEffect, useState } from 'react';
+import LoginPage from './ui/loginpage';
+import HomePage from './ui/homepage'; // Import your home page component
+import { checkIfUserExists} from './data/userdatamanagement';
+import {isExist,isNotExist} from './data/userdata'
+import { useSelector, useDispatch } from 'react-redux';
 
 
-const { db } = firebase;
-function App() {
 
-  const [colors, setColors] = useState([]);
-  console.log(colors);
-  useEffect(() =>
-    onSnapshot(collection(db, "colors"), (snapshot) => {
-      setColors(snapshot.docs.map((doc) => ({...doc.data(),id:doc.id})));
-    })
-    , [])
+const App = () => {
+ 
+  
 
-    
+ 
+
+ const user = useSelector((state) => state.userExist.value); // Assuming the initial state is 0
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const exists = await checkIfUserExists();
+        console.log('Check result:', exists); 
+        // Debugging log
+  
+        if (exists === true) { // Explicitly checking for boolean true
+          console.log("User exists, dispatching action.");
+          dispatch(isExist());
+        } else {
+          console.log("User does not exist.");
+          dispatch(isNotExist());
+          // Handle the case where the user does not exist
+        }
+      } catch (error) {
+        console.error("Error checking user existence:", error);
+       
+      }
+      
+     
+     
+    };
+  
+    checkUser();
+  }, [checkIfUserExists, dispatch]); // Assuming isUserExist is not needed here
   return (
-    <div className="App">
-    <button className='button' onClick={handleNew}>New</button>
-      <ul>
-        {colors.map(
-          (color) => (
-            <li key ={color.id}>
-              <a href="#" onClick={()=>{handleEdit(color.id)}}>edit</a><Dot color={color.value} /> {color.color}
-            </li>
-          )
-        )}
-      </ul>
+    <div>
+      {user ? <HomePage /> : <LoginPage />}
     </div>
   );
-}
+};
 
 export default App;
